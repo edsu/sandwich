@@ -6,15 +6,29 @@
   <title>Wikidata Sandwiches</title>
   <link rel='stylesheet' href='/css/style.css' type='text/css' media='all' />
   <style>
+    body {
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+      padding: 20px;
+      border: thin solid #ccc;
+    }
     img {
-      max-height: 50vh;
+      max-width: 800px;
+      border: 1px inset #ccc;
     }
     #another {
+      text-align: center;
+    }
+    button {
+      cursor: pointer;
+      background-color: lightgreen;
+    }
+    #another button {
       font-size: 1.5em;
     }
     button.edit {
       font-size: .8em;
-      background-color: lightgreen;
     }
   </style>
 </head>
@@ -22,8 +36,10 @@
   <div>Source: <a href="https://w.wiki/3GCb">Wikidata's sandwiches</a> (a riff off of <a href="https://tinysubversions.com/stuff/sandwiches/">a page by Darius</a>)</div>
   <div id="main">
   </div>
-  <button id="another" onclick="generate()">I want another...</button>
-  
+  <div id="another">
+    <button onclick="generate()">I want another...</button>
+  </div>
+
   <script>
 
     Array.prototype.pick = function() {
