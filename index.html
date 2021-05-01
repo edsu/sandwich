@@ -9,13 +9,20 @@
     img {
       max-height: 50vh;
     }
+    #another {
+      font-size: 1.5em;
+    }
+    button.edit {
+      font-size: .8em;
+      background-color: lightgreen;
+    }
   </style>
 </head>
 <body>
   <div>Source: <a href="https://w.wiki/3GCb">Wikidata's sandwiches</a> (a riff off of <a href="https://tinysubversions.com/stuff/sandwiches/">a page by Darius</a>)</div>
   <div id="main">
   </div>
-  <button style="font-size:1.5em;" onclick="generate()">I want another...</button>
+  <button id="another" onclick="generate()">I want another...</button>
   
   <script>
 
@@ -44,11 +51,8 @@
         <h1><a href="${sandwich.url}">${sandwich.name}</a></h1>
         <h2>Origin: ${sandwich.origin || 'Unknown'}</h2>
         <p> 
-          ${
-            sandwich.description 
-            || 
-            '(no description available, why not <a href="' + editUrl + '">add one</a>?)'
-          }
+          ${ sandwich.description || '(no description available)' } 
+          <a href="${editUrl}"><button class="edit">edit?</button></a>
         </p>
         <p>
           <a href="${sandwich.url}">
