@@ -23,8 +23,9 @@
       return this[Math.floor(Math.random()*this.length)];
     };
 
-    function generate(sandwiches) {
+    async function generate() {
       const $el = document.getElementById('main');
+      const sandwiches = await getSandwiches()
       const sandwich = sandwiches.pick();
       $el.innerHTML = `<h1>${sandwich.name}</h1><h2>Origin: ${sandwich.origin || 'Unknown'}</h2><p>${sandwich.description || '(no description available)'}</p><a href="${sandwich.url}"><img src=${sandwich.image}></a>`;
     }
@@ -40,7 +41,7 @@
       }
     }
 
-    async function query() {
+    async function getSandwiches() {
       const endpointUrl = 'https://query.wikidata.org/sparql';
       const sparqlQuery = `
 	SELECT ?item ?itemLabel ?itemDescription ?countryLabel ?image
@@ -65,7 +66,7 @@
       }));
     }
 
-    query().then(generate);
+    generate();
   </script>
 
 </body>
