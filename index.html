@@ -23,6 +23,17 @@
       return this[Math.floor(Math.random()*this.length)];
     };
 
+    class SPARQLQueryDispatcher {
+      constructor(endpoint) {
+        this.endpoint = endpoint;
+      }
+      query(sparqlQuery) {
+        const fullUrl = this.endpoint + '?query=' + encodeURIComponent(sparqlQuery);
+        const headers = { 'Accept': 'application/sparql-results+json' };
+        return fetch(fullUrl, {headers}).then(body => body.json());
+      }
+    }
+
     async function generate() {
       const $el = document.getElementById('main');
       const sandwiches = await getSandwiches()
@@ -30,43 +41,33 @@
       $el.innerHTML = `<h1>${sandwich.name}</h1><h2>Origin: ${sandwich.origin || 'Unknown'}</h2><p>${sandwich.description || '(no description available)'}</p><a href="${sandwich.url}"><img src=${sandwich.image}></a>`;
     }
 
-    class SPARQLQueryDispatcher {
-      constructor(endpoint) {
-	this.endpoint = endpoint;
-      }
-      query(sparqlQuery) {
-	const fullUrl = this.endpoint + '?query=' + encodeURIComponent(sparqlQuery);
-	const headers = { 'Accept': 'application/sparql-results+json' };
-	return fetch(fullUrl, {headers}).then(body => body.json());
-      }
-    }
-
     async function getSandwiches() {
       const endpointUrl = 'https://query.wikidata.org/sparql';
       const sparqlQuery = `
-	SELECT ?item ?itemLabel ?itemDescription ?countryLabel ?image
-	WHERE
-	{
-	  ?item wdt:P279 wd:Q28803.
-	  ?item wdt:P495 ?country.
-	  ?item wdt:P18 ?image.
-	  SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
-	}
-	LIMIT 1000
+        SELECT ?item ?itemLabel ?itemDescription ?countryLabel ?image
+        WHERE
+        {
+          ?item wdt:P279 wd:Q28803.
+          ?item wdt:P495 ?country.
+          ?item wdt:P18 ?image.
+          SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
+        }
+        LIMIT 1000
       `;
 
       const queryDispatcher = new SPARQLQueryDispatcher( endpointUrl );
       const resp = await queryDispatcher.query( sparqlQuery );
       return resp.results.bindings.map(s => ({
-	url: s.item.value,
-	image: s.image.value.replace('http://', 'https://'),
-	name: s.itemLabel.value,
-	description: s.itemDescription ? s.itemDescription.value : null,
-	origin: s.countryLabel.value
+        url: s.item.value,
+        image: s.image.value.replace('http://', 'https://'),
+        name: s.itemLabel.value,
+        description: s.itemDescription ? s.itemDescription.value : null,
+        origin: s.countryLabel.value
       }));
     }
 
     generate();
+
   </script>
 
 </body>
