@@ -55,7 +55,7 @@
         LIMIT 1000
       `;
 
-      const queryDispatcher = new SPARQLQueryDispatcher endpointUrl);
+      const queryDispatcher = new SPARQLQueryDispatcher(endpointUrl);
       const resp = await queryDispatcher.query(sparqlQuery);
       return resp.results.bindings.map(s => ({
         url: s.item.value,
