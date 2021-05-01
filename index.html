@@ -1,4 +1,14 @@
 <!DOCTYPE html>
+
+<!--
+
+👋 Hi, thanks for viewing the source! That was the whole point of this page, which
+was to show how you can query Wikidata live in JavaScript via their SPARQL endpoint.
+Check out the getSandwiches() function below. Alternatively you can look at some
+messages in the console.log in your browser's dev tools.
+
+-->
+
 <html lang="en">
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -7,15 +17,22 @@
   <link rel='stylesheet' href='/css/style.css' type='text/css' media='all' />
   <style>
     body {
+      font-family: sans-serif;
       max-width: 800px;
       margin-left: auto;
       margin-right: auto;
       padding: 20px;
       border: thin solid #ccc;
     }
+    h1 a {
+      text-decoration: none;
+      color: black;
+    }
+    h2 {
+      color: rgba(0,0,0,0.5);
+    }
     img {
       max-width: 800px;
-      border: 1px inset #ccc;
     }
     #another {
       text-align: center;
@@ -52,6 +69,7 @@
       }
       query(sparqlQuery) {
         const fullUrl = this.endpoint + '?query=' + encodeURIComponent(sparqlQuery);
+        console.log(`Fetching SPARQL query via URL: ${fullUrl}`);
         const headers = {'Accept': 'application/sparql-results+json'};
         return fetch(fullUrl, {headers}).then(body => body.json());
       }
@@ -94,6 +112,7 @@
 
       const queryDispatcher = new SPARQLQueryDispatcher(endpointUrl);
       const resp = await queryDispatcher.query(sparqlQuery);
+      console.log('Got SPARQL response:', resp)
       return resp.results.bindings.map(s => ({
         url: new URL(s.item.value),
         image: s.image.value.replace('http://', 'https://'),
