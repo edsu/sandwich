@@ -58,7 +58,7 @@
       const resp = await queryDispatcher.query( sparqlQuery );
       return resp.results.bindings.map(s => ({
 	url: s.item.value,
-	image: s.image.value,
+	image: s.image.value.replace('http://', 'https://'),
 	name: s.itemLabel.value,
 	description: s.itemDescription ? s.itemDescription.value : null,
 	origin: s.countryLabel.value
