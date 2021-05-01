@@ -29,7 +29,7 @@
       }
       query(sparqlQuery) {
         const fullUrl = this.endpoint + '?query=' + encodeURIComponent(sparqlQuery);
-        const headers = { 'Accept': 'application/sparql-results+json' };
+        const headers = {'Accept': 'application/sparql-results+json'};
         return fetch(fullUrl, {headers}).then(body => body.json());
       }
     }
@@ -50,7 +50,7 @@
           ?item wdt:P279 wd:Q28803.
           ?item wdt:P495 ?country.
           ?item wdt:P18 ?image.
-          SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
+          SERVICE wikibase:label {bd:serviceParam wikibase:language "en".}
         }
         LIMIT 1000
       `;
