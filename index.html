@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8">
+  <title>Wikidata Sandwiches</title>
+  <link rel='stylesheet' href='/css/style.css' type='text/css' media='all' />
+  <style>
+    img {
+      max-width: 50%;
+    }
+  </style>
+</head>
+<body>
+  <div>Source: <a href="https://w.wiki/3GCb">Wikidata's sandwiches</a> (a riff off of <a href="https://tinysubversions.com/stuff/sandwiches/">a page by Darius</a>)</div>
+  <div id="main">
+  </div>
+  <button style="font-size:1.5em;" onclick="generate()">I want another...</button>
+  
+  <script>
+
+    Array.prototype.pick = function() {
+      return this[Math.floor(Math.random()*this.length)];
+    };
+
+    function generate(sandwiches) {
+      const $el = document.getElementById('main');
+      const sandwich = sandwiches.pick();
+      $el.innerHTML = `<h1>${sandwich.name}</h1><h2>Origin: ${sandwich.origin || 'Unknown'}</h2><p>${sandwich.description || '(no description available)'}</p><a href="${sandwich.url}"><img src=${sandwich.image}></a>`;
+    }
+
+    class SPARQLQueryDispatcher {
+      constructor(endpoint) {
+	this.endpoint = endpoint;
+      }
+      query(sparqlQuery) {
+	const fullUrl = this.endpoint + '?query=' + encodeURIComponent(sparqlQuery);
+	const headers = { 'Accept': 'application/sparql-results+json' };
+	return fetch(fullUrl, {headers}).then(body => body.json());
+      }
+    }
+
+    async function query() {
+      const endpointUrl = 'https://query.wikidata.org/sparql';
+      const sparqlQuery = `
+	SELECT ?item ?itemLabel ?itemDescription ?countryLabel ?image
+	WHERE
+	{
+	  ?item wdt:P279 wd:Q28803.
+	  ?item wdt:P495 ?country.
+	  ?item wdt:P18 ?image.
+	  SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
+	}
+	LIMIT 1000
+      `;
+
+      const queryDispatcher = new SPARQLQueryDispatcher( endpointUrl );
+      const resp = await queryDispatcher.query( sparqlQuery );
+      return resp.results.bindings.map(s => ({
+	url: s.item.value,
+	image: s.image.value,
+	name: s.itemLabel.value,
+	description: s.itemDescription ? s.itemDescription.value : null,
+	origin: s.countryLabel.value
+      }));
+    }
+
+    query().then(generate);
+  </script>
+
+</body>
+</html>
