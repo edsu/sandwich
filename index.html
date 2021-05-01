@@ -38,7 +38,24 @@
       const $el = document.getElementById('main');
       const sandwiches = await getSandwiches()
       const sandwich = sandwiches.pick();
-      $el.innerHTML = `<h1>${sandwich.name}</h1><h2>Origin: ${sandwich.origin || 'Unknown'}</h2><p>${sandwich.description || '(no description available)'}</p><a href="${sandwich.url}"><img src=${sandwich.image}></a>`;
+      const id = sandwich.url.pathname.replace('/entity/', '')
+      const editUrl = `https://www.wikidata.org/wiki/Special:SetLabelDescriptionAliases/${id}/en`
+      $el.innerHTML = `
+        <h1><a href="${sandwich.url}">${sandwich.name}</a></h1>
+        <h2>Origin: ${sandwich.origin || 'Unknown'}</h2>
+        <p> 
+          ${
+            sandwich.description 
+            || 
+            '(no description available, why not <a href="' + editUrl + '">add one</a>?)'
+          }
+        </p>
+        <p>
+          <a href="${sandwich.url}">
+            <img src=${sandwich.image}>
+          </a>
+        </p>
+      `;
     }
 
     async function getSandwiches() {
@@ -58,7 +75,7 @@
       const queryDispatcher = new SPARQLQueryDispatcher(endpointUrl);
       const resp = await queryDispatcher.query(sparqlQuery);
       return resp.results.bindings.map(s => ({
-        url: s.item.value,
+        url: new URL(s.item.value),
         image: s.image.value.replace('http://', 'https://'),
         name: s.itemLabel.value,
         description: s.itemDescription ? s.itemDescription.value : null,
